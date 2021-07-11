@@ -16,9 +16,16 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    axios.get(`https://api.github.com/users/eriksolveson`).then((res) =>
+      this.setState({
+        userName: res.data.login,
+        name: res.data.name,
+        avatarSrc: res.data.avatar_url,
+      })
+    );
     axios
-      .get(`https://api.github.com/users/${this.state.userName}`)
-      .then((res) => console.log(res.data));
+      .get(`https://api.github.com/users/eriksolveson/followers`)
+      .then((res) => this.setState({ ...this.state, followers: res.data }));
   }
 
   componentDidUpdate() {
@@ -49,7 +56,12 @@ class App extends React.Component {
     console.log("AppClass: Render Component");
     return (
       <div>
-        <Person name={this.state.name} avatar={this.state.avatarSrc} />
+        <Person
+          name={this.state.name}
+          userName={this.state.userName}
+          avatar={this.state.avatarSrc}
+          followers={this.state.followers}
+        />
         <form onSubmit={this.handleSubmit}>
           {" "}
           <input
