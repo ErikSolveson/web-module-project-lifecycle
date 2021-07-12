@@ -9,7 +9,7 @@ class App extends React.Component {
     super();
     this.state = {
       userName: "",
-      name: "",
+      name: null,
       avatar: "",
       inputValue: "",
     };
@@ -30,6 +30,15 @@ class App extends React.Component {
 
   componentDidUpdate() {
     console.log("AppClass: Component Updated");
+    axios
+      .get(`https://api.github.com/users/${this.state.userName}`)
+      .then((res) =>
+        this.setState({
+          userName: res.data.login,
+          name: res.data.name,
+          avatarSrc: res.data.avatar_url,
+        })
+      );
   }
 
   handleChange = (e) => {
@@ -41,27 +50,23 @@ class App extends React.Component {
     e.preventDefault();
     console.log("submit");
     this.setState({ ...this.state, userName: this.state.inputValue });
-    axios
-      .get(`https://api.github.com/users/${this.state.userName}`)
-      .then((res) =>
-        this.setState({
-          userName: res.data.login,
-          name: res.data.name,
-          avatarSrc: res.data.avatar_url,
-        })
-      );
   };
 
   render() {
     console.log("AppClass: Render Component");
     return (
       <div>
-        <Person
-          name={this.state.name}
-          userName={this.state.userName}
-          avatar={this.state.avatarSrc}
-          followers={this.state.followers}
-        />
+        {this.state.name && true ? (
+          <Person
+            name={this.state.name}
+            userName={this.state.userName}
+            avatar={this.state.avatarSrc}
+            followers={this.state.followers}
+          />
+        ) : (
+          "loading"
+        )}
+
         <form onSubmit={this.handleSubmit}>
           {" "}
           <input
